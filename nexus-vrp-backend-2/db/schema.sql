@@ -1,0 +1,42 @@
+CREATE TABLE IF NOT EXISTS depots (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  lat DOUBLE PRECISION NOT NULL,
+  lng DOUBLE PRECISION NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS vehicles (
+  id TEXT PRIMARY KEY,
+  depot_id TEXT REFERENCES depots(id),
+  capacity_kg DOUBLE PRECISION NOT NULL DEFAULT 100,
+  status TEXT NOT NULL DEFAULT 'available',
+  lat DOUBLE PRECISION,
+  lng DOUBLE PRECISION,
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS orders (
+  id TEXT PRIMARY KEY,
+  customer_name TEXT NOT NULL DEFAULT 'Anonymous',
+  lat DOUBLE PRECISION NOT NULL,
+  lng DOUBLE PRECISION NOT NULL,
+  weight_kg DOUBLE PRECISION NOT NULL DEFAULT 10,
+  status TEXT NOT NULL DEFAULT 'pending',
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS assignments (
+  id TEXT PRIMARY KEY,
+  vehicle_id TEXT REFERENCES vehicles(id),
+  order_id TEXT REFERENCES orders(id),
+  sequence INTEGER NOT NULL DEFAULT 1,
+  eta_minutes INTEGER,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS traffic (
+  region TEXT PRIMARY KEY,
+  level TEXT NOT NULL DEFAULT 'normal',
+  speed_factor DOUBLE PRECISION NOT NULL DEFAULT 1.0,
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
